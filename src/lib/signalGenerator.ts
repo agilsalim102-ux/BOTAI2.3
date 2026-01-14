@@ -356,9 +356,18 @@ function analyzeMultiTimeframe(pair: string): number {
   return (short_trend === medium_trend ? 0.8 : 0.3) + (Math.abs(short_rsi - medium_rsi) > 20 ? 0.1 : 0);
 }
 
-export function generateSignal() {
+export function generateSignal(thresholdOverride?: number) {
   const session = getCurrentSession();
   const pairs = session.pairs;
+
+  let threshold = thresholdOverride ?? 75;
+  if (thresholdOverride === undefined) {
+    const savedSettings = localStorage.getItem('tradingSettings');
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings);
+      threshold = settings.confidenceThreshold ?? 75;
+    }
+  }
 
   let attempts = 0;
   const maxAttempts = 20;
@@ -383,7 +392,7 @@ export function generateSignal() {
         session: session.name
       };
 
-      if (finalConfidence >= 75) {
+      if (finalConfidence >= threshold) {
         return bestSignal;
       }
     }
@@ -391,7 +400,7 @@ export function generateSignal() {
     attempts++;
   }
 
-  return bestSignal;
+  return null;
 }
 
 export function getTimeUntilNextInterval(): number {

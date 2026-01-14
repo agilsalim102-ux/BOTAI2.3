@@ -6,7 +6,7 @@ import SignalCard from '../components/SignalCard';
 import SessionIndicator from '../components/SessionIndicator';
 import StatsCard from '../components/StatsCard';
 import ControlsPanel from '../components/ControlsPanel';
-import { Activity } from 'lucide-react';
+import { Activity, AlertCircle } from 'lucide-react';
 
 export default function DashboardPage() {
   const [signals, setSignals] = useState<TradingSignal[]>([]);
@@ -15,6 +15,7 @@ export default function DashboardPage() {
   const [session, setSession] = useState(getCurrentSession());
   const [nextSignalIn, setNextSignalIn] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [noSignalMessage, setNoSignalMessage] = useState('');
 
   useEffect(() => {
     loadSignals();
@@ -119,6 +120,7 @@ export default function DashboardPage() {
 
   const generateAndSaveSignal = async () => {
     setIsGenerating(true);
+    setNoSignalMessage('');
     const newSignal = generateSignal();
 
     if (newSignal) {
@@ -132,6 +134,10 @@ export default function DashboardPage() {
         setCurrentSignal(data);
         await sendToTelegram(data);
       }
+    } else {
+      const savedSettings = localStorage.getItem('tradingSettings');
+      const threshold = savedSettings ? JSON.parse(savedSettings).confidenceThreshold ?? 88 : 88;
+      setNoSignalMessage(`No signal found with confidence >= ${threshold}%. Try lowering the threshold in Settings.`);
     }
     setIsGenerating(false);
   };
@@ -195,6 +201,15 @@ export default function DashboardPage() {
         </div>
 
         <div>
+          {noSignalMessage && (
+            <div className="mb-8 bg-amber-50 border border-amber-200 rounded-xl p-6 flex items-center gap-4">
+              <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
+              <div>
+                <p className="font-semibold text-amber-900">{noSignalMessage}</p>
+              </div>
+            </div>
+          )}
+
           {currentSignal && (
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-5">
