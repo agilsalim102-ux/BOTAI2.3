@@ -182,8 +182,19 @@ export default function DashboardPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-3">
+      <div>
+        <div className="mb-8">
+          <ControlsPanel
+            isAutoMode={isAutoMode}
+            nextSignalIn={nextSignalIn}
+            isGenerating={isGenerating}
+            onToggleMode={toggleMode}
+            onGenerateSignal={generateAndSaveSignal}
+            onClearHistory={clearHistory}
+          />
+        </div>
+
+        <div>
           {currentSignal && (
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-5">
@@ -215,17 +226,6 @@ export default function DashboardPage() {
               </div>
             )}
           </div>
-        </div>
-
-        <div>
-          <ControlsPanel
-            isAutoMode={isAutoMode}
-            nextSignalIn={nextSignalIn}
-            isGenerating={isGenerating}
-            onToggleMode={toggleMode}
-            onGenerateSignal={generateAndSaveSignal}
-            onClearHistory={clearHistory}
-          />
         </div>
       </div>
     </main>
