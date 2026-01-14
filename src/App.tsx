@@ -1,11 +1,17 @@
 import { useState } from 'react';
+import { isConfigured } from './lib/supabase';
 import Navigation from './components/Navigation';
+import ConfigError from './components/ConfigError';
 import DashboardPage from './pages/DashboardPage';
 import HistoryPage from './pages/HistoryPage';
 import SettingsPage from './pages/SettingsPage';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<'dashboard' | 'history' | 'settings'>('dashboard');
+
+  if (!isConfigured) {
+    return <ConfigError />;
+  }
 
   const renderPage = () => {
     switch (currentPage) {
